@@ -27,7 +27,7 @@ public:
 
     tetromino();
 
-    void draw();
+    void draw(iVector2 map_dimensions);
     void logic();
 private:
     static float time_since_last_move;

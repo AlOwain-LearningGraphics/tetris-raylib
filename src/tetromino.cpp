@@ -44,7 +44,7 @@ tetromino::tetromino()
     //          a Tetromino randomly till it finds an empty spot.
     //          This is only here to test the collision system
     while (!ChangePos({GetRandomValue(1, 10), GetRandomValue(1, 20)}));
-
+    
     // TODO: Check if the game ended
 }
 
@@ -53,12 +53,12 @@ void tetromino::logic()
     assert(tetromino_type != GAME_ENDED_OUT_OF_BOUNDS);
 }
 
-void tetromino::draw()
+void tetromino::draw(iVector2 map_dimensions)
 {
     iVector2 currPos = pos;
     for (int i = 0; i < TETROMINO_PIECES; i++)
     {
-        DrawRectangle((int)(currPos.m_x * 40), (GetScreenHeight() - (int)(currPos.m_y * 40)), 40, 40, color);
+        DrawRectangle(currPos.m_x * 40 + map_dimensions.m_x, ((GetScreenHeight() - map_dimensions.m_y) - currPos.m_y * 40), 40, 40, color);
         currPos += TraverseMap(i);
     }
 }

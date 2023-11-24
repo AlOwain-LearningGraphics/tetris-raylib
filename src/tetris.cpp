@@ -1,9 +1,14 @@
 #include "raylib.h"
 #include "tetromino.h"
 
+// TODO: define these and manage the Tetrominoes elsewhere 
+#define BLOCK_SIZE 40
+#define HUD_WIDTH 80
+#define HUD_HEIGHT 80
+
 int main(int argc, char* argv[])
 {
-    InitWindow(480, 880, "example");
+    InitWindow(BLOCK_SIZE * MAP_WIDTH + HUD_WIDTH, BLOCK_SIZE * MAP_HEIGHT + HUD_HEIGHT, "example");
     SetTargetFPS(60);
     
     tetromino x;
@@ -22,13 +27,12 @@ int main(int argc, char* argv[])
         s.logic();
         i.logic();
         BeginDrawing();
-            x.draw();
-            r.draw();
-            t.draw();
-            k.draw();
-            s.draw();
-            i.draw();
-            ClearBackground(BLACK);
+            x.draw({HUD_WIDTH / 2, HUD_HEIGHT / 2});
+            r.draw({HUD_WIDTH / 2, HUD_HEIGHT / 2});
+            t.draw({HUD_WIDTH / 2, HUD_HEIGHT / 2});
+            k.draw({HUD_WIDTH / 2, HUD_HEIGHT / 2});
+            s.draw({HUD_WIDTH / 2, HUD_HEIGHT / 2});
+            i.draw({HUD_WIDTH / 2, HUD_HEIGHT / 2});
         EndDrawing();
     }
 
