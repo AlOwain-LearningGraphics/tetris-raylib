@@ -9,10 +9,12 @@ public:
     iVector2 operator-(iVector2 vector);
     iVector2 operator*(iVector2 vector);
     iVector2 operator/(iVector2 vector);
+    
     iVector2 operator+(int number);
     iVector2 operator-(int number);
     iVector2 operator*(int number);
     iVector2 operator/(int number);
+
     void operator+=(iVector2 vector);
     void operator-=(iVector2 vector);
     void operator*=(iVector2 vector);
