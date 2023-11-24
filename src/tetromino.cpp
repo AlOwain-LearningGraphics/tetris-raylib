@@ -4,6 +4,7 @@
 
 // Initializeing the static grid to be false.
 // This is used to calculate collision.
+bool tetromino::m_HasGameEnded = false;
 bool tetromino::grid[10][20] = {{false}};
 float tetromino::time_since_last_move = 0;
 
@@ -50,7 +51,6 @@ tetromino::tetromino()
 
 void tetromino::logic()
 {
-    assert(tetromino_type != GAME_ENDED_OUT_OF_BOUNDS);
 }
 
 void tetromino::draw(iVector2 map_dimensions)
@@ -63,6 +63,10 @@ void tetromino::draw(iVector2 map_dimensions)
     }
 }
 
+bool tetromino::HasGameEnded()
+{
+    return m_HasGameEnded;
+}
 void tetromino::CreateTetrominoMap()
 {
     switch (tetromino_type)
