@@ -2,12 +2,17 @@
 #include <iostream>
 #include <raylib.h>
 
-enum tetromino::type tetromino::GetRandomType()
+// Initializeing the static grid to be false.
+// This is used to calculate collision.
+bool tetromino::grid[10][20] = {{false}};
+float tetromino::time_since_last_move = 0;
+
+enum tetromino::type GetRandomType()
 {
-    return static_cast<enum type>(GetRandomValue(0, 5));
+    return static_cast<enum tetromino::type>(GetRandomValue(0, 5));
 }
 
-Color tetromino::GetRandomColor()
+Color GetRandomColor()
 {
     switch (GetRandomValue(0, 7))
     {
@@ -28,39 +33,33 @@ Color tetromino::GetRandomColor()
     }
 }
 
+static int count = 0;
 tetromino::tetromino()
 {
-    // TODO: Make the tetromino spawn from the top
-    pos = {(short) (GetRandomValue(1, 10)), (short) (GetRandomValue(1, 20))};
-    color = GetRandomColor(); 
+    color = GetRandomColor();
     tetromino_type = GetRandomType();
     CreateTetrominoMap();
+
+    // FIXME:        Manage a proper spawning mechanism. This spawns
+    //          a Tetromino randomly till it finds an empty spot.
+    //          This is only here to test the collision system
+    while (!ChangePos({GetRandomValue(1, 10), GetRandomValue(1, 20)}));
+
+    // TODO: Check if the game ended
 }
 
 void tetromino::logic()
 {
+    assert(tetromino_type != GAME_ENDED_OUT_OF_BOUNDS);
 }
 
 void tetromino::draw()
 {
-    sVector2 currPos = pos;
+    iVector2 currPos = pos;
     for (int i = 0; i < TETROMINO_PIECES; i++)
     {
         DrawRectangle((int)(currPos.m_x * 40), (GetScreenHeight() - (int)(currPos.m_y * 40)), 40, 40, color);
-        switch (tetromino_map[i]) {
-            case UP:
-                currPos.m_y += 1;
-            break;
-            case RIGHT:
-                currPos.m_x += 1;
-            break;
-            case DOWN:
-                currPos.m_y -= 1;
-            break;
-            case LEFT:
-                currPos.m_x -= 1;
-            break;
-        }
+        currPos += TraverseMap(i);
     }
 }
 
@@ -72,31 +71,80 @@ void tetromino::CreateTetrominoMap()
             tetromino_map[0] = DOWN;
             tetromino_map[1] = DOWN;
             tetromino_map[2] = DOWN;
-        break;
+            return;
         case SQUARE:
             tetromino_map[0] = RIGHT;
             tetromino_map[1] = DOWN;
             tetromino_map[2] = LEFT;
-        break;
+            return;
         case L_TYPE:
             tetromino_map[0] = DOWN;
             tetromino_map[1] = DOWN;
             tetromino_map[2] = RIGHT;
-        break;
+            return;
         case J_TYPE:
             tetromino_map[0] = DOWN;
             tetromino_map[1] = DOWN;
             tetromino_map[2] = LEFT;
-        break;
+            return;
         case SKEW:
             tetromino_map[0] = DOWN;
             tetromino_map[1] = RIGHT;
             tetromino_map[2] = DOWN;
-        break;
+            return;
         case REVERSE_SKEW:
             tetromino_map[0] = DOWN;
             tetromino_map[1] = LEFT;
             tetromino_map[2] = DOWN;
-        break;
+            return;
+        default:
+            assert(0 && "Tetromino can not have a type other than those specified");
     }
+}
+
+iVector2 tetromino::TraverseMap(int index)
+{
+    switch (tetromino_map[index]) {
+        case UP:
+            return {0, 1};
+        case RIGHT:
+            return {1, 0};
+        case DOWN:
+            return {0, -1};
+        case LEFT:
+            return {-1, 0};
+    }
+    return {0, 0};
+}
+
+bool OutOfBounds(iVector2 pos)
+{
+    if (pos.m_x > 9 || pos.m_x < 0 || pos.m_y <= 0)
+    {
+        return true;
+    }
+    return false;
+}
+
+bool tetromino::ChangePos(iVector2 newPos)
+{
+    iVector2 traversalPos = newPos;
+    for (int i = 0; i < TETROMINO_PIECES; i++)
+    {
+        if (grid[traversalPos.m_x][traversalPos.m_y] || OutOfBounds(traversalPos))
+        {
+            return false;
+        }
+        traversalPos += TraverseMap(i);
+    }
+
+    traversalPos = newPos;
+    for (int i = 0; i < TETROMINO_PIECES; i++)
+    {
+        grid[traversalPos.m_x][traversalPos.m_y] = true;
+        traversalPos += TraverseMap(i);
+    }
+
+    pos = newPos;
+    return true;
 }

@@ -12,6 +12,7 @@ int main(int argc, char* argv[])
     tetromino k;
     tetromino s;
     tetromino i;
+
     while(!WindowShouldClose())
     {
         x.logic();

@@ -1,6 +1,7 @@
 #pragma once
 #include "raylib.h"
-#include "sVector2.h"
+#include "iVector2.h"
+#include <assert.h>
 
 #define MAP_HEIGHT 20
 #define MAP_WIDTH 10
@@ -14,7 +15,8 @@ public:
         L_TYPE,
         J_TYPE,
         SKEW,
-        REVERSE_SKEW
+        REVERSE_SKEW,
+        GAME_ENDED_OUT_OF_BOUNDS
     };
     enum direction {
         UP,
@@ -28,14 +30,14 @@ public:
     void draw();
     void logic();
 private:
-    sVector2 pos;
+    static float time_since_last_move;
+    static bool grid[MAP_WIDTH][MAP_HEIGHT];
+    iVector2 pos;
     Color color;
     type tetromino_type;
-    static bool grid[MAP_WIDTH][MAP_HEIGHT];
     direction tetromino_map[TETROMINO_PIECES - 1];
-    float time_since_last_move;
 
-    enum type GetRandomType();
-    Color GetRandomColor();
     void CreateTetrominoMap();
+    iVector2 TraverseMap(int index);
+    bool ChangePos(iVector2 newPos);
 };
