@@ -33,3 +33,24 @@ void iVector2::operator/=(iVector2 vector)
     m_x = m_x / vector.m_x;
     m_y = m_y / vector.m_y;
 }
+
+void iVector2::operator+=(int number)
+{
+    m_x = m_x + number;
+    m_y = m_y + number;
+}
+void iVector2::operator-=(int number)
+{
+    m_x = m_x - number;
+    m_y = m_y - number;
+}
+void iVector2::operator*=(int number)
+{
+    m_x = m_x * number;
+    m_y = m_y * number;
+}
+void iVector2::operator/=(int number)
+{
+    m_x = m_x / number;
+    m_y = m_y / number;
+}

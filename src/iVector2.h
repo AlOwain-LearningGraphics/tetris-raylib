@@ -19,4 +19,9 @@ public:
     void operator-=(iVector2 vector);
     void operator*=(iVector2 vector);
     void operator/=(iVector2 vector);
+    
+    void operator+=(int number);
+    void operator-=(int number);
+    void operator*=(int number);
+    void operator/=(int number);
 };
