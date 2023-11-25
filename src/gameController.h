@@ -1,4 +1,5 @@
 #include "tetromino.h"
+#include "raylib.h"
 
 #define BLOCK_SIZE 40
 #define HUD_WIDTH 80

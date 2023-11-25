@@ -1,6 +1,4 @@
 #include "tetromino.h"
-#include <iostream>
-#include <raylib.h>
 
 // Initializeing the static grid to be false.
 // This is used to calculate collision.
@@ -55,11 +53,11 @@ void tetromino::logic()
 
 void tetromino::draw(iVector2 map_dimensions)
 {
-    iVector2 currPos = pos;
+    iVector2 traverseCurrPos = pos;
     for (int i = 0; i < TETROMINO_PIECES; i++)
     {
-        DrawRectangle(currPos.m_x * 40 + map_dimensions.m_x, ((GetScreenHeight() - map_dimensions.m_y) - currPos.m_y * 40), 40, 40, color);
-        currPos += TraverseMap(i);
+        DrawRectangle(traverseCurrPos.m_x * 40 + map_dimensions.m_x, ((GetScreenHeight() - map_dimensions.m_y) - traverseCurrPos.m_y * 40), 40, 40, color);
+        traverseCurrPos += TraverseMap(i);
     }
 }
 
@@ -130,25 +128,36 @@ bool OutOfBounds(iVector2 pos)
     return false;
 }
 
+void tetromino::OccupyGridPos(bool occupy)
+{
+    for (int i = 0; i < TETROMINO_PIECES; i++)
+    {
+        grid[pos.m_x][pos.m_y] = occupy;
+        pos += TraverseMap(i);
+    }
+}
+
 bool tetromino::ChangePos(iVector2 newPos)
 {
-    iVector2 traversalPos = newPos;
+    // Here we traverse the old Tetromino pos to deoccupy every
+    // coordinate it is on
+    OccupyGridPos(false);
+
+    // Here we traverse the Tetromino to check every coordinate
+    // it will occupy if we change its position to see whether
+    // the place is already taken or not on the grid
+    iVector2 traverseNewPos = newPos;
     for (int i = 0; i < TETROMINO_PIECES; i++)
     {
-        if (grid[traversalPos.m_x][traversalPos.m_y] || OutOfBounds(traversalPos))
+        if (grid[traverseNewPos.m_x][traverseNewPos.m_y] || OutOfBounds(traverseNewPos))
         {
+            OccupyGridPos(true);
             return false;
         }
-        traversalPos += TraverseMap(i);
-    }
-
-    traversalPos = newPos;
-    for (int i = 0; i < TETROMINO_PIECES; i++)
-    {
-        grid[traversalPos.m_x][traversalPos.m_y] = true;
-        traversalPos += TraverseMap(i);
+        traverseNewPos += TraverseMap(i);
     }
 
     pos = newPos;
+    OccupyGridPos(true);
     return true;
 }

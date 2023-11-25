@@ -1,6 +1,4 @@
 #include "gameController.h"
-#include <raylib.h>
-
 
 gameController::gameController() { reset(); }
 

@@ -17,12 +17,6 @@ public:
         SKEW,
         REVERSE_SKEW,
     };
-    enum direction {
-        UP,
-        RIGHT,
-        DOWN,
-        LEFT
-    };
 
     tetromino();
 
@@ -30,6 +24,12 @@ public:
     void logic();
     bool HasGameEnded();
 private:
+    enum direction {
+        UP,
+        RIGHT,
+        DOWN,
+        LEFT
+    };
     static float time_since_last_move;
     static bool grid[MAP_WIDTH][MAP_HEIGHT];
     static bool m_HasGameEnded;
@@ -40,5 +40,6 @@ private:
 
     void CreateTetrominoMap();
     iVector2 TraverseMap(int index);
+    void OccupyGridPos(bool occupy);
     bool ChangePos(iVector2 newPos);
 };
