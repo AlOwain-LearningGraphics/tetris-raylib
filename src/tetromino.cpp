@@ -1,166 +1,163 @@
 #include "tetromino.h"
-#include <iostream>
+#include <vector>
 
 // Initializeing the static grid to be false.
-// This is used to calculate collision.
-bool tetromino::m_HasGameEnded = false;
 bool tetromino::grid[10][20] = {{false}};
-float tetromino::time_since_last_move = 0;
 
-enum tetromino::type GetRandomType()
+enum tetromino::tetromino_type GetRandomType()
 {
-    return static_cast<enum tetromino::type>(GetRandomValue(0, 5));
+    return static_cast<enum tetromino::tetromino_type>(GetRandomValue(0, 5));
 }
 
 Color GetRandomColor()
 {
-    switch (GetRandomValue(0, 7))
+    switch (GetRandomValue(0, 6))
     {
-        case 0:
-            return PURPLE;
-        case 1:
-            return GREEN;
-        case 2:
-            return BLUE;
-        case 3:
-            return DARKBLUE;
-        case 4:
-            return ORANGE;
-        case 5:
-            return YELLOW;
+        case 0: return PURPLE;
+        case 1: return GREEN;
+        case 2: return BLUE;
+        case 3: return DARKBLUE;
+        case 4: return ORANGE;
+        case 5: return YELLOW;
+        case 6: return RED;
         default:
-            return RED;
+            assert(0);
+        break;
     }
 }
 
-static int count = 0;
 tetromino::tetromino()
 {
+    // FIXME:       A rework of the construction, destruction, and reuse of Tetrominoes
+    //          is really needed. A Tetromino now is drawn even if it didn't spawn,
+    //          and when implemnting the destruction in the near future using the current
+    //          method of simply removing the tetromino would cause issues with the collision
+    //          and the removal of some parts of the Tetromino without others.
+    m_tetromino_type = GetRandomType();
+    color = BLACK;
+}
+
+void tetromino::reset()
+{
+    m_tetromino_type = GetRandomType();
     color = GetRandomColor();
-    tetromino_type = GetRandomType();
-    CreateTetrominoMap();
 
     // FIXME:        Manage a proper spawning mechanism. This spawns
     //          a Tetromino randomly till it finds an empty spot.
     //          This is only here to test the collision system
-    while (!ChangePos({GetRandomValue(1, 10), GetRandomValue(1, 20)}));
+    while (!ChangePos({GetRandomValue(1, 10), 20}));
     
     // TODO: Check if the game ended
 }
 
-void tetromino::logic()
+bool tetromino::logic()
 {
-    ChangePos({pos.m_x, pos.m_y - 1});
+    bool x = ChangePos({m_pos.m_x, m_pos.m_y - 1});
+    return x;
 }
 
 void tetromino::draw(iVector2 map_dimensions)
 {
-    iVector2 traverseCurrPos = pos;
+    std::vector<iVector2> tPos = TranslatePos(m_pos, m_tetromino_type);
     for (int i = 0; i < TETROMINO_PIECES; i++)
     {
-        DrawRectangle(traverseCurrPos.m_x * 40 + map_dimensions.m_x, ((GetScreenHeight() - map_dimensions.m_y) - traverseCurrPos.m_y * 40), 40, 40, color);
-        traverseCurrPos += TraverseMap(i);
+        DrawRectangle(tPos[i].m_x * 40 + map_dimensions.m_x, ((GetScreenHeight() - map_dimensions.m_y) - tPos[i].m_y * 40), BLOCK_SIZE, BLOCK_SIZE, color);
     }
 }
 
-bool tetromino::HasGameEnded()
+std::vector<iVector2> TranslatePos(iVector2 pos, tetromino::tetromino_type type)
 {
-    return m_HasGameEnded;
-}
-void tetromino::CreateTetrominoMap()
-{
-    switch (tetromino_type)
+    switch (type)
     {
-        case STRAIGHT:
-            tetromino_map[0] = DOWN;
-            tetromino_map[1] = DOWN;
-            tetromino_map[2] = DOWN;
-            return;
-        case SQUARE:
-            tetromino_map[0] = RIGHT;
-            tetromino_map[1] = DOWN;
-            tetromino_map[2] = LEFT;
-            return;
-        case L_TYPE:
-            tetromino_map[0] = DOWN;
-            tetromino_map[1] = DOWN;
-            tetromino_map[2] = RIGHT;
-            return;
-        case J_TYPE:
-            tetromino_map[0] = DOWN;
-            tetromino_map[1] = DOWN;
-            tetromino_map[2] = LEFT;
-            return;
-        case SKEW:
-            tetromino_map[0] = DOWN;
-            tetromino_map[1] = RIGHT;
-            tetromino_map[2] = DOWN;
-            return;
-        case REVERSE_SKEW:
-            tetromino_map[0] = DOWN;
-            tetromino_map[1] = LEFT;
-            tetromino_map[2] = DOWN;
-            return;
+        case tetromino::STRAIGHT:
+            return {{pos.m_x   , pos.m_y   },
+                    {pos.m_x   , pos.m_y -1},
+                    {pos.m_x   , pos.m_y -2},
+                    {pos.m_x   , pos.m_y -3}};
+        case tetromino::SQUARE:
+            return {{pos.m_x   , pos.m_y   },
+                    {pos.m_x +1, pos.m_y   },
+                    {pos.m_x +1, pos.m_y -1},
+                    {pos.m_x   , pos.m_y -1}};
+        case tetromino::L_TYPE:
+            return {{pos.m_x   , pos.m_y   },
+                    {pos.m_x   , pos.m_y -1},
+                    {pos.m_x   , pos.m_y -2},
+                    {pos.m_x +1, pos.m_y -2}};
+        case tetromino::J_TYPE:
+            return {{pos.m_x   , pos.m_y   },
+                    {pos.m_x   , pos.m_y -1},
+                    {pos.m_x   , pos.m_y -2},
+                    {pos.m_x -1, pos.m_y -2}};
+        case tetromino::SKEW:
+            return {{pos.m_x   , pos.m_y   },
+                    {pos.m_x   , pos.m_y -1},
+                    {pos.m_x +1, pos.m_y -1},
+                    {pos.m_x +1, pos.m_y -2}};
+        case tetromino::REVERSE_SKEW:
+            return {{pos.m_x   , pos.m_y   },
+                    {pos.m_x   , pos.m_y -1},
+                    {pos.m_x -1, pos.m_y -1},
+                    {pos.m_x -1, pos.m_y -2}};
         default:
-            assert(0 && "Tetromino can not have a type other than those specified");
+            assert(0 && "Tetromino type undefined.");
+        break;
     }
 }
 
-iVector2 tetromino::TraverseMap(int index)
+bool OutOfBounds(iVector2 pos, tetromino::tetromino_type type)
 {
-    switch (tetromino_map[index]) {
-        case UP:
-            return {0, 1};
-        case RIGHT:
-            return {1, 0};
-        case DOWN:
-            return {0, -1};
-        case LEFT:
-            return {-1, 0};
-    }
-    return {0, 0};
-}
-
-bool OutOfBounds(iVector2 pos)
-{
-    if (pos.m_x > 9 || pos.m_x < 0 || pos.m_y <= 0)
+    std::vector<iVector2> tGrid = TranslatePos(pos, type);
+    for (int i = 0; i < TETROMINO_PIECES; i++)
     {
-        return true;
+        if (tGrid[i].m_x > 10 || tGrid[i].m_x < 0 || tGrid[i].m_y <= 0)
+        {
+            return true;
+        }
     }
     return false;
 }
 
-void tetromino::OccupyGridPos(bool occupy)
+void tetromino::OccupyGridPos(iVector2 pos, bool occupy)
 {
-    iVector2 traversePos = pos;
+    std::vector<iVector2> tGrid = TranslatePos(pos, m_tetromino_type);
     for (int i = 0; i < TETROMINO_PIECES; i++)
     {
-        grid[pos.m_x][pos.m_y] = occupy;
-        traversePos += TraverseMap(i);
+        grid[tGrid[i].m_x][tGrid[i].m_y] = occupy;
     }
 }
 
 bool tetromino::ChangePos(iVector2 newPos)
 {
-    // Here we traverse the old Tetromino pos to deoccupy every
-    // coordinate it is on
-    OccupyGridPos(false);
+    if (OutOfBounds(newPos, m_tetromino_type)) { return false; }
 
     // Here we traverse the Tetromino to check every coordinate
     // it will occupy if we change its position to see whether
     // the place is already taken or not on the grid
-    iVector2 traverseNewPos = newPos;
+    std::vector<iVector2> newGrid = TranslatePos(newPos, m_tetromino_type);
     for (int i = 0; i < TETROMINO_PIECES; i++)
     {
-        if (grid[traverseNewPos.m_x][traverseNewPos.m_y] || OutOfBounds(traverseNewPos))
+        if (grid[newGrid[i].m_x][newGrid[i].m_y])
         {
-            OccupyGridPos(true);
-            return false;
+            std::vector<iVector2> oldGrid = TranslatePos(m_pos, m_tetromino_type);
+            bool sharedPos = false;
+            for (int j = 0; j < TETROMINO_PIECES; j++)
+            {
+                if (oldGrid[j] == newGrid[i])
+                {
+                    sharedPos = true;
+                    break;
+                }
+            }
+            if (!sharedPos)
+            {
+                return false;
+            }
         }
-        traverseNewPos += TraverseMap(i);
     }
     
-    pos = newPos;
-    OccupyGridPos(true);
+    OccupyGridPos(m_pos, false);
+    OccupyGridPos(newPos, true);
+    m_pos = newPos;
     return true;
 }

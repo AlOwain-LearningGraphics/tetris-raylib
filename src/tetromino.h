@@ -2,14 +2,24 @@
 #include "raylib.h"
 #include "iVector2.h"
 #include <assert.h>
+#include <vector>
 
-#define MAP_HEIGHT 20
-#define MAP_WIDTH 10
+#ifndef BLOCK_SIZE
+#define BLOCK_SIZE 40
+#endif
+#ifndef TETROMINO_PIECES 
 #define TETROMINO_PIECES 4
+#endif
+#ifndef GRID_WIDTH
+#define GRID_WIDTH 10
+#endif
+#ifndef GRID_HEIGHT
+#define GRID_HEIGHT 20
+#endif
 
 class tetromino {
 public:
-    enum type {
+    enum tetromino_type {
         STRAIGHT,
         SQUARE,
         L_TYPE,
@@ -17,29 +27,20 @@ public:
         SKEW,
         REVERSE_SKEW,
     };
-
+    
     tetromino();
 
     void draw(iVector2 map_dimensions);
-    void logic();
-    bool HasGameEnded();
-private:
-    enum direction {
-        UP,
-        RIGHT,
-        DOWN,
-        LEFT
-    };
-    static float time_since_last_move;
-    static bool grid[MAP_WIDTH][MAP_HEIGHT];
-    static bool m_HasGameEnded;
-    iVector2 pos;
+    bool logic();
     Color color;
-    type tetromino_type;
-    direction tetromino_map[TETROMINO_PIECES - 1];
+    void reset();
+private:
+    static bool grid[GRID_WIDTH][GRID_HEIGHT];
+    iVector2 m_pos;
+    tetromino_type m_tetromino_type;
 
-    void CreateTetrominoMap();
-    iVector2 TraverseMap(int index);
-    void OccupyGridPos(bool occupy);
+    void OccupyGridPos(iVector2 pos, bool occupy);
     bool ChangePos(iVector2 newPos);
 };
+
+std::vector<iVector2> TranslatePos(iVector2 pos, tetromino::tetromino_type type);

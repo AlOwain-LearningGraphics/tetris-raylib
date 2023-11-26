@@ -6,6 +6,8 @@ public:
     iVector2();
     iVector2(int x, int y);
 
+    bool operator==(iVector2 vector);
+
     iVector2 operator+(iVector2 vector);
     iVector2 operator-(iVector2 vector);
     iVector2 operator*(iVector2 vector);
