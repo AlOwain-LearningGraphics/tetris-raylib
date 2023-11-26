@@ -1,4 +1,5 @@
 #include "tetromino.h"
+#include <iostream>
 
 // Initializeing the static grid to be false.
 // This is used to calculate collision.
@@ -49,6 +50,7 @@ tetromino::tetromino()
 
 void tetromino::logic()
 {
+    ChangePos({pos.m_x, pos.m_y - 1});
 }
 
 void tetromino::draw(iVector2 map_dimensions)
@@ -130,10 +132,11 @@ bool OutOfBounds(iVector2 pos)
 
 void tetromino::OccupyGridPos(bool occupy)
 {
+    iVector2 traversePos = pos;
     for (int i = 0; i < TETROMINO_PIECES; i++)
     {
         grid[pos.m_x][pos.m_y] = occupy;
-        pos += TraverseMap(i);
+        traversePos += TraverseMap(i);
     }
 }
 
@@ -156,7 +159,7 @@ bool tetromino::ChangePos(iVector2 newPos)
         }
         traverseNewPos += TraverseMap(i);
     }
-
+    
     pos = newPos;
     OccupyGridPos(true);
     return true;
