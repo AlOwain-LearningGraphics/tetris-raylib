@@ -15,12 +15,6 @@
 #ifndef HUD_HEIGHT 
 #define HUD_HEIGHT 80
 #endif
-#ifndef TETROMINO_PIECES
-#define TETROMINO_PIECES 4
-#endif
-#ifndef MAX_PIECES
-#define MAX_PIECES ((GRID_WIDTH * GRID_HEIGHT) / TETROMINO_PIECES) + 5
-#endif
 
 class gameController {
 public:
@@ -32,8 +26,7 @@ private:
     float time_between_moves;
     float time_since_last_move;
 
-    tetromino pieces[MAX_PIECES];
-    int focused_piece;
+    tetromino piece;
 
     void reset();
 };
