@@ -26,7 +26,7 @@ public:
 private:
     float time_between_moves;
     float time_since_last_move;
-
+    grid game_grid;
     tetromino piece;
 
     void reset();

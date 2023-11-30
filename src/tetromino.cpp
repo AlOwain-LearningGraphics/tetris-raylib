@@ -1,8 +1,5 @@
 #include "tetromino.h"
 
-// Initializeing the static grid to be false.
-bool tetromino::grid[10][20] = {{false}};
-
 enum tetromino::tetromino_type GetRandomType()
 {
     return static_cast<enum tetromino::tetromino_type>(GetRandomValue(0, 5));
@@ -33,7 +30,7 @@ tetromino::tetromino()
     //          method of simply removing the tetromino would cause issues with the collision
     //          and the removal of some parts of the Tetromino without others.
     m_tetromino_type = GetRandomType();
-    color = BLACK;
+    color = WHITE;
 }
 
 void tetromino::reset()
@@ -42,32 +39,29 @@ void tetromino::reset()
     color = GetRandomColor();
 
     // FIXME:        Manage a proper spawning mechanism. This spawns
-    //          a Tetromino randomly till it finds an empty spot.
-    //          This is only here to test the collision system
-    while (!ChangePos({GetRandomValue(1, 10), 20}));
-    
+    //          a Tetromino randomly.
+    ChangePos({GetRandomValue(1, 10), 20});
+
     // TODO: Check if the game ended
 }
 
 bool tetromino::logic()
 {
-    bool x = ChangePos({m_pos.m_x, m_pos.m_y - 1});
-    return x;
+    return ChangePos({m_pos.m_x, m_pos.m_y - 1});
 }
 
-void tetromino::draw(iVector2 map_dimensions)
+void tetromino::draw()
 {
-    std::vector<iVector2> tPos = GetPos();
+    std::vector<iVector2> tPos = get_pos();
     for (int i = 0; i < TETROMINO_PIECES; i++)
     {
-        DrawRectangle(tPos[i].m_x * BLOCK_SIZE + map_dimensions.m_x,  GetScreenHeight() - (tPos[i].m_y * BLOCK_SIZE + map_dimensions.m_y), BLOCK_SIZE, BLOCK_SIZE, color);
+        // Draw relative to the HUD size
+        DrawRectangle(tPos[i].m_x * BLOCK_SIZE,  GetScreenHeight() - (tPos[i].m_y * BLOCK_SIZE), BLOCK_SIZE, BLOCK_SIZE, color);
     }
 }
 
-std::vector<iVector2> tetromino::GetPos()
-{
-    return TranslatePos(m_pos, m_tetromino_type);
-}
+std::vector<iVector2> tetromino::get_pos() { return TranslatePos(m_pos, m_tetromino_type); }
+Color tetromino::get_color() { return color; }
 
 std::vector<iVector2> TranslatePos(iVector2 pos, tetromino::tetromino_type type)
 {
@@ -109,9 +103,8 @@ std::vector<iVector2> TranslatePos(iVector2 pos, tetromino::tetromino_type type)
     }
 }
 
-bool OutOfBounds(iVector2 pos, tetromino::tetromino_type type)
+bool OutOfBounds(std::vector<iVector2> tGrid)
 {
-    std::vector<iVector2> tGrid = TranslatePos(pos, type);
     for (int i = 0; i < TETROMINO_PIECES; i++)
     {
         if (tGrid[i].m_x > 10 || tGrid[i].m_x < 0 || tGrid[i].m_y <= 0)
@@ -122,46 +115,14 @@ bool OutOfBounds(iVector2 pos, tetromino::tetromino_type type)
     return false;
 }
 
-void tetromino::OccupyGridPos(iVector2 pos, bool occupy)
-{
-    std::vector<iVector2> tGrid = GetPos();
-    for (int i = 0; i < TETROMINO_PIECES; i++)
-    {
-        grid[tGrid[i].m_x][tGrid[i].m_y] = occupy;
-    }
-}
-
 bool tetromino::ChangePos(iVector2 newPos)
 {
-    if (OutOfBounds(newPos, m_tetromino_type)) { return false; }
+    grid gameGrid;
+    std::vector<iVector2> newTetrominoPos = TranslatePos(newPos, m_tetromino_type);
 
-    // Here we traverse the Tetromino to check every coordinate
-    // it will occupy if we change its position to see whether
-    // the place is already taken or not on the grid
-    std::vector<iVector2> newGrid = TranslatePos(newPos, m_tetromino_type);
-    for (int i = 0; i < TETROMINO_PIECES; i++)
-    {
-        if (grid[newGrid[i].m_x][newGrid[i].m_y])
-        {
-            std::vector<iVector2> oldGrid = GetPos();
-            bool sharedPos = false;
-            for (int j = 0; j < TETROMINO_PIECES; j++)
-            {
-                if (oldGrid[j] == newGrid[i])
-                {
-                    sharedPos = true;
-                    break;
-                }
-            }
-            if (!sharedPos)
-            {
-                return false;
-            }
-        }
-    }
-    
-    OccupyGridPos(m_pos, false);
-    OccupyGridPos(newPos, true);
+    if (OutOfBounds(newTetrominoPos)) { return false; }
+    if (gameGrid.is_occupied(newTetrominoPos)) { return false; }
+
     m_pos = newPos;
     return true;
 }

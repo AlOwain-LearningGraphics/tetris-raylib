@@ -1,6 +1,7 @@
 #pragma once
 #include "raylib.h"
 #include "iVector2.h"
+#include "grid.h"
 #include <assert.h>
 #include <vector>
 
@@ -30,17 +31,17 @@ public:
     
     tetromino();
 
-    void draw(iVector2 map_dimensions);
+
+    void draw();
     bool logic();
-    Color color;
     void reset();
-    std::vector<iVector2> GetPos();
+    std::vector<iVector2> get_pos();
+    Color get_color();
 private:
-    static bool grid[GRID_WIDTH][GRID_HEIGHT];
     iVector2 m_pos;
     tetromino_type m_tetromino_type;
+    Color color;
 
-    void OccupyGridPos(iVector2 pos, bool occupy);
     bool ChangePos(iVector2 newPos);
 };
 

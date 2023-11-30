@@ -1,3 +1,4 @@
+#pragma once
 #include "iVector2.h"
 #include "raylib.h"
 #include <vector>
@@ -16,9 +17,9 @@ class grid {
 public:
     grid();
 
-    void occupyPos(std::vector<iVector2> posList, Color color);
-    bool isOccupied(std::vector<iVector2> posList);
-    void draw(iVector2 map_dimensions);
+    void occupy_pos(std::vector<iVector2> posList, Color color);
+    bool is_occupied(std::vector<iVector2> posList);
+    void draw();
     void reset();
 private:
     static Color items[GRID_WIDTH][GRID_HEIGHT];

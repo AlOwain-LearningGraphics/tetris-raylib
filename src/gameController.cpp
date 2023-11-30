@@ -11,8 +11,9 @@ void gameController::logic()
 
     if (time_since_last_move < time_between_moves) { return; }
     
-    if (!piece.logic())
+    if (!piece.logic()) 
     {
+        game_grid.occupy_pos(piece.get_pos(), piece.get_color());
         piece.reset();
     }
 
@@ -26,8 +27,8 @@ void gameController::draw()
     
     ClearBackground(BLACK);
     
-    // FIXME: Provide actual map dimensions instead of this hack
-    piece.draw({40, 40});
+    game_grid.draw();
+    piece.draw();
 }
 
 void gameController::reset()
