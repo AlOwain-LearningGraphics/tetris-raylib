@@ -34,6 +34,7 @@ public:
     bool logic();
     Color color;
     void reset();
+    std::vector<iVector2> GetPos();
 private:
     static bool grid[GRID_WIDTH][GRID_HEIGHT];
     iVector2 m_pos;

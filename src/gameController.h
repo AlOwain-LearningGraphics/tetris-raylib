@@ -2,6 +2,7 @@
 
 #include "tetromino.h"
 #include "raylib.h"
+#include "grid.h"
 
 #ifndef GRID_WIDTH
 #define GRID_WIDTH 10
