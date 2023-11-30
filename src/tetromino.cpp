@@ -117,11 +117,11 @@ bool OutOfBounds(std::vector<iVector2> tGrid)
 
 bool tetromino::ChangePos(iVector2 newPos)
 {
-    grid gameGrid;
+    grid game_grid;
     std::vector<iVector2> newTetrominoPos = TranslatePos(newPos, m_tetromino_type);
 
     if (OutOfBounds(newTetrominoPos)) { return false; }
-    if (gameGrid.is_occupied(newTetrominoPos)) { return false; }
+    if (game_grid.is_occupied(newTetrominoPos)) { return false; }
 
     m_pos = newPos;
     return true;
