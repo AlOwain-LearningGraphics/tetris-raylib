@@ -1,5 +1,4 @@
 #include "tetromino.h"
-#include <vector>
 
 // Initializeing the static grid to be false.
 bool tetromino::grid[10][20] = {{false}};
@@ -58,11 +57,16 @@ bool tetromino::logic()
 
 void tetromino::draw(iVector2 map_dimensions)
 {
-    std::vector<iVector2> tPos = TranslatePos(m_pos, m_tetromino_type);
+    std::vector<iVector2> tPos = GetPos();
     for (int i = 0; i < TETROMINO_PIECES; i++)
     {
-        DrawRectangle(tPos[i].m_x * 40 + map_dimensions.m_x, ((GetScreenHeight() - map_dimensions.m_y) - tPos[i].m_y * 40), BLOCK_SIZE, BLOCK_SIZE, color);
+        DrawRectangle(tPos[i].m_x * BLOCK_SIZE + map_dimensions.m_x,  GetScreenHeight() - (tPos[i].m_y * BLOCK_SIZE + map_dimensions.m_y), BLOCK_SIZE, BLOCK_SIZE, color);
     }
+}
+
+std::vector<iVector2> tetromino::GetPos()
+{
+    return TranslatePos(m_pos, m_tetromino_type);
 }
 
 std::vector<iVector2> TranslatePos(iVector2 pos, tetromino::tetromino_type type)
@@ -120,7 +124,7 @@ bool OutOfBounds(iVector2 pos, tetromino::tetromino_type type)
 
 void tetromino::OccupyGridPos(iVector2 pos, bool occupy)
 {
-    std::vector<iVector2> tGrid = TranslatePos(pos, m_tetromino_type);
+    std::vector<iVector2> tGrid = GetPos();
     for (int i = 0; i < TETROMINO_PIECES; i++)
     {
         grid[tGrid[i].m_x][tGrid[i].m_y] = occupy;
@@ -139,7 +143,7 @@ bool tetromino::ChangePos(iVector2 newPos)
     {
         if (grid[newGrid[i].m_x][newGrid[i].m_y])
         {
-            std::vector<iVector2> oldGrid = TranslatePos(m_pos, m_tetromino_type);
+            std::vector<iVector2> oldGrid = GetPos();
             bool sharedPos = false;
             for (int j = 0; j < TETROMINO_PIECES; j++)
             {
