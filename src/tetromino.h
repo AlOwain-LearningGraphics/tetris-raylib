@@ -40,6 +40,7 @@ public:
 
     void draw();
     bool logic();
+    bool input();
     void reset();
     std::vector<iVector2> get_pos();
     Color get_color();

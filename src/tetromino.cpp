@@ -1,4 +1,5 @@
 #include "tetromino.h"
+#include <raylib.h>
 
 enum tetromino::tetromino_type GetRandomType()
 {
@@ -39,6 +40,24 @@ void tetromino::reset()
 bool tetromino::logic()
 {
     return ChangePos({m_pos.m_x, m_pos.m_y - 1});
+}
+
+bool tetromino::input()
+{
+    bool has_moved = false;
+    if (IsKeyDown(KEY_LEFT))
+    {
+        has_moved = ChangePos({m_pos.m_x - 1, m_pos.m_y}) || has_moved;
+    }
+    if (IsKeyDown(KEY_RIGHT))
+    {
+        has_moved = ChangePos({m_pos.m_x + 1, m_pos.m_y}) || has_moved;
+    }
+    if (IsKeyDown(KEY_DOWN))
+    {
+        has_moved = ChangePos({m_pos.m_x, m_pos.m_y - 1}) || has_moved;
+    }
+    return has_moved;
 }
 
 void tetromino::draw()
