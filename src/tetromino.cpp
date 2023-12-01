@@ -22,16 +22,7 @@ Color GetRandomColor()
     }
 }
 
-tetromino::tetromino()
-{
-    // FIXME:       A rework of the construction, destruction, and reuse of Tetrominoes
-    //          is really needed. A Tetromino now is drawn even if it didn't spawn,
-    //          and when implemnting the destruction in the near future using the current
-    //          method of simply removing the tetromino would cause issues with the collision
-    //          and the removal of some parts of the Tetromino without others.
-    m_tetromino_type = GetRandomType();
-    color = WHITE;
-}
+tetromino::tetromino() {}
 
 void tetromino::reset()
 {
@@ -56,7 +47,9 @@ void tetromino::draw()
     for (int i = 0; i < TETROMINO_PIECES; i++)
     {
         // Draw relative to the HUD size
-        DrawRectangle(tPos[i].m_x * BLOCK_SIZE,  GetScreenHeight() - (tPos[i].m_y * BLOCK_SIZE), BLOCK_SIZE, BLOCK_SIZE, color);
+        DrawRectangle(tPos[i].m_x * BLOCK_SIZE + HUD_WIDTH / 2,
+                      GetScreenHeight() - (tPos[i].m_y * BLOCK_SIZE + HUD_HEIGHT / 2),
+                      BLOCK_SIZE, BLOCK_SIZE, color);
     }
 }
 
@@ -107,7 +100,7 @@ bool OutOfBounds(std::vector<iVector2> tGrid)
 {
     for (int i = 0; i < TETROMINO_PIECES; i++)
     {
-        if (tGrid[i].m_x > 10 || tGrid[i].m_x < 0 || tGrid[i].m_y <= 0)
+        if (tGrid[i].m_x > 9 || tGrid[i].m_x < 0 || tGrid[i].m_y <= 0)
         {
             return true;
         }

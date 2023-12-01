@@ -1,5 +1,4 @@
 #include "grid.h"
-#include <raylib.h>
 
 Color grid::items[GRID_WIDTH][GRID_HEIGHT] = {{{BLACK.r, BLACK.g, BLACK.b, 255}}};
 
@@ -40,7 +39,9 @@ void grid::draw()
             ||  items[x][y].g != 0
             ||  items[x][y].b != 0)
             {
-                DrawRectangle(x * BLOCK_SIZE, GetScreenHeight() - (y * BLOCK_SIZE), BLOCK_SIZE, BLOCK_SIZE, items[x][y]);
+                DrawRectangle(x * BLOCK_SIZE + (HUD_WIDTH / 2),
+                              GetScreenHeight() - (y * BLOCK_SIZE + HUD_HEIGHT / 2),
+                              BLOCK_SIZE, BLOCK_SIZE, items[x][y]);
             }
         }
     }

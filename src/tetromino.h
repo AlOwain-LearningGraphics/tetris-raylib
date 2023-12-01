@@ -17,6 +17,12 @@
 #ifndef GRID_HEIGHT
 #define GRID_HEIGHT 20
 #endif
+#ifndef HUD_WIDTH
+#define HUD_WIDTH 80
+#endif
+#ifndef HUD_HEIGHT
+#define HUD_HEIGHT 80
+#endif
 
 class tetromino {
 public:
