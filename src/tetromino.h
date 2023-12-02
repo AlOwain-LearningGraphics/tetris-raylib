@@ -34,22 +34,30 @@ public:
         SKEW,
         REVERSE_SKEW,
     };
+    enum input_type {
+        LEFT,
+        RIGHT,
+        DOWN,
+        ROTATE,
+        NO_MOVE
+    };
     
     tetromino();
 
 
     void draw();
-    bool logic();
-    bool input();
+    bool logic(input_type next_move);
+    input_type input();
     void reset();
     std::vector<iVector2> get_pos();
     Color get_color();
 private:
     iVector2 m_pos;
+    bool m_rotation = false;
     tetromino_type m_tetromino_type;
-    Color color;
+    Color m_color;
 
-    bool ChangePos(iVector2 newPos);
+    bool change_pos(iVector2 newPos, bool rotation);
 };
 
-std::vector<iVector2> TranslatePos(iVector2 pos, tetromino::tetromino_type type);
+std::vector<iVector2> TranslatePos(iVector2 pos, tetromino::tetromino_type type, bool rotation);

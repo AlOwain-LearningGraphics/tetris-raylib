@@ -11,12 +11,12 @@ public:
     void draw();
     void logic();
 private:
-    float time_since_last_move;
-    float time_since_logic;
-    float move_delay;
-    float logic_delay;
+    float time_since_move, ticks_per_sec, time_since_physics_tick, physics_ticks_per_sec;
+    
+    tetromino::input_type next_move;
+
     grid game_grid;
     tetromino piece;
-
+    
     void reset();
 };

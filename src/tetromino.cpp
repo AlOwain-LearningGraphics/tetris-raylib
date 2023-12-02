@@ -1,5 +1,4 @@
 #include "tetromino.h"
-#include <raylib.h>
 
 enum tetromino::tetromino_type GetRandomType()
 {
@@ -27,37 +26,42 @@ tetromino::tetromino() {}
 
 void tetromino::reset()
 {
+    m_pos = {-10, -10};
     m_tetromino_type = GetRandomType();
-    color = GetRandomColor();
+    m_color = GetRandomColor();
+    m_rotation = false;
 
     // FIXME:        Manage a proper spawning mechanism. This spawns
     //          a Tetromino randomly.
-    ChangePos({GetRandomValue(1, 10), 20});
+    change_pos({GetRandomValue(1, 10), 20}, m_rotation);
 
     // TODO: Check if the game ended
 }
 
-bool tetromino::logic()
+bool tetromino::logic(input_type next_move)
 {
-    return ChangePos({m_pos.m_x, m_pos.m_y - 1});
+    switch (next_move) {
+        case DOWN:
+            return change_pos({m_pos.m_x, m_pos.m_y - 1}, m_rotation);
+        case LEFT:
+            return change_pos({m_pos.m_x - 1, m_pos.m_y}, m_rotation);
+        case RIGHT:
+            return change_pos({m_pos.m_x + 1, m_pos.m_y}, m_rotation);
+        case ROTATE:
+            return change_pos({m_pos.m_x, m_pos.m_y}, !m_rotation);
+        default:
+            return true;
+    }
 }
 
-bool tetromino::input()
+tetromino::input_type tetromino::input()
 {
-    bool has_moved = false;
-    if (IsKeyDown(KEY_LEFT))
-    {
-        has_moved = ChangePos({m_pos.m_x - 1, m_pos.m_y}) || has_moved;
-    }
-    if (IsKeyDown(KEY_RIGHT))
-    {
-        has_moved = ChangePos({m_pos.m_x + 1, m_pos.m_y}) || has_moved;
-    }
-    if (IsKeyDown(KEY_DOWN))
-    {
-        has_moved = ChangePos({m_pos.m_x, m_pos.m_y - 1}) || has_moved;
-    }
-    return has_moved;
+    if (IsKeyDown(KEY_LEFT)) { return LEFT; }
+    if (IsKeyDown(KEY_RIGHT)) { return RIGHT; }
+    if (IsKeyDown(KEY_DOWN)) { return DOWN; }
+    if (IsKeyDown(KEY_UP)) { return ROTATE; }
+
+    return NO_MOVE;
 }
 
 void tetromino::draw()
@@ -68,51 +72,71 @@ void tetromino::draw()
         // Draw relative to the HUD size
         DrawRectangle(tPos[i].m_x * BLOCK_SIZE + HUD_WIDTH / 2,
                       GetScreenHeight() - (tPos[i].m_y * BLOCK_SIZE + HUD_HEIGHT / 2),
-                      BLOCK_SIZE, BLOCK_SIZE, color);
+                      BLOCK_SIZE, BLOCK_SIZE, get_color());
     }
 }
 
-std::vector<iVector2> tetromino::get_pos() { return TranslatePos(m_pos, m_tetromino_type); }
-Color tetromino::get_color() { return color; }
+std::vector<iVector2> tetromino::get_pos() { return TranslatePos(m_pos, m_tetromino_type, m_rotation); }
+Color tetromino::get_color() { return m_color; }
 
-std::vector<iVector2> TranslatePos(iVector2 pos, tetromino::tetromino_type type)
+std::vector<iVector2> TranslatePos(iVector2 original_position, tetromino::tetromino_type type, bool rotation)
 {
+    std::vector<iVector2> grid_position;
     switch (type)
     {
         case tetromino::STRAIGHT:
-            return {{pos.m_x   , pos.m_y   },
-                    {pos.m_x   , pos.m_y -1},
-                    {pos.m_x   , pos.m_y -2},
-                    {pos.m_x   , pos.m_y -3}};
+            grid_position = {{0 ,  0},
+                             {0 , -1},
+                             {0 , -2},
+                             {0 , -3}};
+        break;
         case tetromino::SQUARE:
-            return {{pos.m_x   , pos.m_y   },
-                    {pos.m_x +1, pos.m_y   },
-                    {pos.m_x +1, pos.m_y -1},
-                    {pos.m_x   , pos.m_y -1}};
+            grid_position = {{0 ,  0},
+                             {1 ,  0},
+                             {1 , -1},
+                             {0 , -1}};
+        break;
         case tetromino::L_TYPE:
-            return {{pos.m_x   , pos.m_y   },
-                    {pos.m_x   , pos.m_y -1},
-                    {pos.m_x   , pos.m_y -2},
-                    {pos.m_x +1, pos.m_y -2}};
+            grid_position = {{0 ,  0},
+                             {0 , -1},
+                             {0 , -2},
+                             {1 , -2}};
+        break;
         case tetromino::J_TYPE:
-            return {{pos.m_x   , pos.m_y   },
-                    {pos.m_x   , pos.m_y -1},
-                    {pos.m_x   , pos.m_y -2},
-                    {pos.m_x -1, pos.m_y -2}};
+            grid_position = {{0 ,  0},
+                             {0 , -1},
+                             {0 , -2},
+                             {-1, -2}};
+        break;
         case tetromino::SKEW:
-            return {{pos.m_x   , pos.m_y   },
-                    {pos.m_x   , pos.m_y -1},
-                    {pos.m_x +1, pos.m_y -1},
-                    {pos.m_x +1, pos.m_y -2}};
+            grid_position = {{0 ,  0},
+                             {0 , -1},
+                             {1 , -1},
+                             {1 , -2}};
+        break;
         case tetromino::REVERSE_SKEW:
-            return {{pos.m_x   , pos.m_y   },
-                    {pos.m_x   , pos.m_y -1},
-                    {pos.m_x -1, pos.m_y -1},
-                    {pos.m_x -1, pos.m_y -2}};
+            grid_position = {{0 ,  0},
+                             {0 , -1},
+                             {-1, -1},
+                             {-1, -2}};
+        break;
         default:
-            assert(0 && "Tetromino type undefined.");
+            assert(0);
         break;
     }
+    if (rotation)
+    {
+        for (int i = 0; i < 4; i++)
+        {
+            grid_position[i] = {grid_position[i].m_y, grid_position[i].m_x};
+        }
+    }
+
+    for (int i = 0; i < 4; i++)
+    {
+        grid_position[i] = {grid_position[i].m_x + original_position.m_x, grid_position[i].m_y + original_position.m_y};
+    }
+    return grid_position;
 }
 
 bool OutOfBounds(std::vector<iVector2> tGrid)
@@ -127,14 +151,15 @@ bool OutOfBounds(std::vector<iVector2> tGrid)
     return false;
 }
 
-bool tetromino::ChangePos(iVector2 newPos)
+bool tetromino::change_pos(iVector2 new_pos, bool new_rotation)
 {
     grid game_grid;
-    std::vector<iVector2> newTetrominoPos = TranslatePos(newPos, m_tetromino_type);
+    std::vector<iVector2> newTetrominoPos = TranslatePos(new_pos, m_tetromino_type, new_rotation);
 
     if (OutOfBounds(newTetrominoPos)) { return false; }
     if (game_grid.is_occupied(newTetrominoPos)) { return false; }
 
-    m_pos = newPos;
+    m_pos = new_pos;
+    m_rotation = new_rotation;
     return true;
 }
