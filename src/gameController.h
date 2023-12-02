@@ -10,6 +10,7 @@ public:
 
     void draw();
     void logic();
+    void reset();
 private:
     float time_since_move, ticks_per_sec, time_since_physics_tick, physics_ticks_per_sec;
     
@@ -17,6 +18,4 @@ private:
 
     grid game_grid;
     tetromino piece;
-    
-    void reset();
 };

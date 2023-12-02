@@ -25,6 +25,7 @@ public:
 
     void occupy_pos(std::vector<iVector2> posList, Color color);
     bool is_occupied(std::vector<iVector2> posList);
+    bool check_for_endgame();
     void draw();
     void reset();
 private:

@@ -47,6 +47,20 @@ void grid::draw()
     }
 }
 
+bool grid::check_for_endgame()
+{
+    for (int x = 0; x < GRID_WIDTH; x++)
+    {
+        if (items[x][GRID_HEIGHT - 1].r != 0
+        ||  items[x][GRID_HEIGHT - 1].g != 0
+        ||  items[x][GRID_HEIGHT - 1].b != 0)
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
 void grid::reset()
 {
     for (int y = 0; y < GRID_HEIGHT; y++)
