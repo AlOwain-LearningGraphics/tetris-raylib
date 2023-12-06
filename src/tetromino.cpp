@@ -22,20 +22,15 @@ Color GetRandomColor()
     }
 }
 
-tetromino::tetromino() {}
+tetromino::tetromino() { reset(); }
 
 void tetromino::reset()
 {
-    m_pos = {-10, -10};
     m_tetromino_type = GetRandomType();
     m_color = GetRandomColor();
     m_rotation = false;
 
-    // FIXME:        Manage a proper spawning mechanism. This spawns
-    //          a Tetromino randomly.
     change_pos({GetRandomValue(1, 10), 20}, m_rotation);
-
-    // TODO: Check if the game ended
 }
 
 bool tetromino::logic(input_type next_move)

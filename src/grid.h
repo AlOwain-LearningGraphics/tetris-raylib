@@ -23,11 +23,16 @@ class grid {
 public:
     grid();
 
-    void occupy_pos(std::vector<iVector2> posList, Color color);
-    bool is_occupied(std::vector<iVector2> posList);
-    bool check_for_endgame();
     void draw();
     void reset();
+    bool logic(std::vector<iVector2> posList, Color color);
+
+    void occupy_pos(std::vector<iVector2> posList, Color color);
+    bool is_occupied(std::vector<iVector2> posList);
 private:
     static Color items[GRID_WIDTH][GRID_HEIGHT];
+    static short drawing_order[GRID_HEIGHT + 1];
+
+    void check_completed_rows();
+    bool check_for_endgame();
 };

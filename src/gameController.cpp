@@ -13,8 +13,7 @@ void gameController::logic()
     {
         if (!piece.logic(tetromino::DOWN))
         {
-            game_grid.occupy_pos(piece.get_pos(), piece.get_color());
-            if (game_grid.check_for_endgame()) { reset(); }
+            if (game_grid.logic(piece.get_pos(), piece.get_color())) { reset(); }
             piece.reset();
         }
         time_since_physics_tick = 0;

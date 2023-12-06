@@ -61,3 +61,4 @@ private:
 };
 
 std::vector<iVector2> TranslatePos(iVector2 pos, tetromino::tetromino_type type, bool rotation);
+bool OutOfBounds(std::vector<iVector2> tGrid);
