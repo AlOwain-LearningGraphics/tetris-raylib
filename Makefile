@@ -1,10 +1,10 @@
-all: build/tetris
+all: build/main
 
-build/tetris: build/tetris.o build/iVector2.o build/tetromino.o build/gameController.o build/grid.o
+build/main: build/main.o build/iVector2.o build/tetromino.o build/gameController.o build/grid.o
 	g++ build/tetris.o build/iVector2.o build/tetromino.o build/gameController.o build/grid.o -Wall -o build/tetris -I/usr/local/include -L/usr/local/lib -lraylib -lm -lpthread -ldl
 
-build/tetris.o: src/tetris.cpp | build
-	g++ -c src/tetris.cpp -o build/tetris.o
+build/main.o: src/main.cpp | build
+	g++ -c src/main.cpp -o build/main.o
 
 build/iVector2.o: src/iVector2.cpp src/iVector2.h
 	g++ -c src/iVector2.cpp -o build/iVector2.o

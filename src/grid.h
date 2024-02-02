@@ -32,7 +32,7 @@ public:
     bool is_occupied(std::vector<iVector2> posList);
 private:
     static Color items[GRID_WIDTH][GRID_HEIGHT];
-    static short drawing_order[GRID_HEIGHT];
+    static short drawing_order[GRID_HEIGHT + 1];
 
     void reset_row(short row);
     void check_completed_rows();

@@ -1,7 +1,7 @@
 #include "grid.h"
 
 Color grid::items[GRID_WIDTH][GRID_HEIGHT] = {{{0, 0, 0, 255}}};
-short grid::drawing_order[GRID_HEIGHT] = {0};
+short grid::drawing_order[GRID_HEIGHT + 1] = {0};
 
 grid::grid() {}
 
@@ -43,24 +43,23 @@ bool grid::logic(std::vector<iVector2> posList, Color color)
 {
     occupy_pos(posList, color);
     
-    // check_completed_rows();
+    check_completed_rows();
     return check_for_endgame();
 }
 
 bool grid::check_for_endgame()
 {
     for (int x = 0; x < GRID_WIDTH; x++)
-        if (items[x][drawing_order[GRID_HEIGHT - 1]].r != 0
-        ||  items[x][drawing_order[GRID_HEIGHT - 1]].g != 0
-        ||  items[x][drawing_order[GRID_HEIGHT - 1]].b != 0)
+        if (items[x][drawing_order[GRID_HEIGHT]].r != 0
+        ||  items[x][drawing_order[GRID_HEIGHT]].g != 0
+        ||  items[x][drawing_order[GRID_HEIGHT]].b != 0)
             return true;
     return false;
 }
 
 void grid::check_completed_rows()
 {
-    printGrid();
-    for (int y = 0; y < GRID_HEIGHT + 1; y++)
+    for (int y = 1; y < GRID_HEIGHT + 1; y++)
     {
         int x = 0;
         while (items[x][drawing_order[y]].r != 0
@@ -69,11 +68,21 @@ void grid::check_completed_rows()
         {
             if (x == GRID_WIDTH)
             {
-                // FIXME: Make it properly replace the rows.
-                reset_row(y);
-                drawing_order[GRID_HEIGHT] = y;
+                // TODO: This almost works, the issue is that it only removes the first row completed
+                //      then it stops working entirely.
+
+                printGrid();
+                int completed_row = drawing_order[y];
+                reset_row(completed_row);
+
                 for (int i = y; i < GRID_HEIGHT; i++)
-                    drawing_order[i]--;
+                    drawing_order[i] = drawing_order[i + 1];
+                
+                drawing_order[GRID_HEIGHT] = completed_row;
+                printGrid();
+
+                // FIXME:   This break statement could be the issue, as the dy is changed the for loop
+                //          still iterates to the y+1 and skips the dy that dropped.
                 break;
             }
             x++;
@@ -96,8 +105,6 @@ void grid::reset_row(short row)
         items[x][row] = {0, 0, 0, 255};
 }
 
-#include <iostream>
-
 void grid::printGrid()
 {
     std::cout << " y   dy  ";
@@ -105,7 +112,7 @@ void grid::printGrid()
          std::cout << x << " ";
     std::cout << std::endl;
 
-    for (int y = GRID_HEIGHT; y > 0; y--)
+    for (int y = 1; y < GRID_HEIGHT + 1; y++)
     {
         if (y <= 9)
             std::cout << "0" << y;
@@ -126,5 +133,5 @@ void grid::printGrid()
         }
          std::cout << std::endl;
     }
-     std::cout << "\n_________________________________" << std::endl;
+    std::cout << "_____________________________" << std::endl;
 }
